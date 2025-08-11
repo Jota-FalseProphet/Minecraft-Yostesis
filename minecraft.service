@@ -1,0 +1,28 @@
+# Servicio systemd para el servidor de Minecraft Paper
+# Autor: Jota (Jota-FalseProphet)
+# Descripción:
+#   Permite que el servidor de Minecraft arranque automáticamente
+#   al iniciar el sistema, y facilita el control con systemctl.
+#
+# Guardar este archivo en: /etc/systemd/system/minecraft.service
+# Comandos útiles:
+#   sudo systemctl start minecraft
+#   sudo systemctl stop minecraft
+#   sudo systemctl restart minecraft
+#   sudo systemctl status minecraft
+
+[Unit]
+Description=Minecraft Server (Paper)
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/minecraft/paper
+User=yotesis
+Group=yotesis
+ExecStart=/usr/bin/java -Xms2G -Xmx4G -jar server.jar --nogui
+Restart=on-failure
+RestartSec=10
+SuccessExitStatus=0 143
+
+[Install]
+WantedBy=multi-user.target
