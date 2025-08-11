@@ -10,17 +10,20 @@
 [Unit]
 Description=Minecraft Paper Server (con screen)
 After=network.target
+Wants=network-online.target
 
 [Service]
-# Carpeta donde está server.jar (ajústalo si la cambias)
+# Carpeta donde está server.jar
 WorkingDirectory=/opt/minecraft/paper
+user=yotesis
+Group=yotesis
 
 # Usuario del servicio (ajusta si no usas 'yotesis')
 User=yotesis
 Group=yotesis
 
-# Ajusta la memoria aquí
-Environment="JAVA_ARGS=-Xms2G -Xmx4G"
+# Parámetros de optimización aquí
+Environment="JAVA_ARGS=-Xms4G -Xmx6G -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1"
 
 # Arranque dentro de una sesión 'screen' llamada 'minecraft'
 ExecStart=/usr/bin/screen -DmS minecraft /usr/bin/java $JAVA_ARGS -jar server.jar --nogui
