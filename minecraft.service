@@ -13,23 +13,18 @@ After=network.target
 Wants=network-online.target
 
 [Service]
-# Carpeta donde está server.jar
 WorkingDirectory=/opt/minecraft/paper
-user=yotesis
-Group=yotesis
-
-# Usuario del servicio (ajusta si no usas 'yotesis')
 User=yotesis
 Group=yotesis
 
-# Parámetros de optimización aquí
 Environment="JAVA_ARGS=-Xms4G -Xmx6G -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+ParallelRefProcEnabled -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1"
+Environment="SCREENDIR=/opt/minecraft/.screen"
 
-# Arranque dentro de una sesión 'screen' llamada 'minecraft'
+ExecStartPre=/bin/mkdir -p /opt/minecraft/.screen
+ExecStartPre=/bin/chown -R yotesis:yotesis /opt/minecraft/.screen
 ExecStart=/usr/bin/screen -DmS minecraft /usr/bin/java $JAVA_ARGS -jar server.jar --nogui
-
-# Parada limpia: manda "stop" a la consola y cierra screen
-ExecStop=/usr/bin/screen -S minecraft -p 0 -X stuff "stop$(printf \\r)"
+ExecStop=/usr/bin/screen -S minecraft -p 0 -X stuff "stop$(printf 
+)"
 ExecStop=/bin/sleep 2
 ExecStop=/usr/bin/screen -S minecraft -X quit
 
