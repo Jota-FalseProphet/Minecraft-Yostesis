@@ -1,28 +1,39 @@
-# Servicio systemd para el servidor de Minecraft Paper
+# Servicio systemd para Minecraft (PaperMC) con consola en screen
 # Autor: Jota (Jota-FalseProphet)
-# Descripción:
-#   Permite que el servidor de Minecraft arranque automáticamente
-#   al iniciar el sistema, y facilita el control con systemctl.
-#
-# Guardar este archivo en: /etc/systemd/system/minecraft.service
-# Comandos útiles:
-#   sudo systemctl start minecraft
-#   sudo systemctl stop minecraft
-#   sudo systemctl restart minecraft
-#   sudo systemctl status minecraft
+# Uso:
+#   - Copia este archivo como /etc/systemd/system/minecraft.service
+#   - systemctl daemon-reload
+#   - systemctl enable --now minecraft
+#   - Para ver la consola: sudo screen -r minecraft
+#   - Para salir sin parar el server: Ctrl+A, luego D
 
 [Unit]
-Description=Minecraft Server (Paper)
+Description=Minecraft Paper Server (con screen)
 After=network.target
 
 [Service]
+# Carpeta donde está server.jar (ajústalo si la cambias)
 WorkingDirectory=/opt/minecraft/paper
+
+# Usuario del servicio (ajusta si no usas 'yotesis')
 User=yotesis
 Group=yotesis
-ExecStart=/usr/bin/java -Xms2G -Xmx4G -jar server.jar --nogui
+
+# Ajusta la memoria aquí
+Environment="JAVA_ARGS=-Xms2G -Xmx4G"
+
+# Arranque dentro de una sesión 'screen' llamada 'minecraft'
+ExecStart=/usr/bin/screen -DmS minecraft /usr/bin/java $JAVA_ARGS -jar server.jar --nogui
+
+# Parada limpia: manda "stop" a la consola y cierra screen
+ExecStop=/usr/bin/screen -S minecraft -p 0 -X stuff "stop$(printf \\r)"
+ExecStop=/bin/sleep 2
+ExecStop=/usr/bin/screen -S minecraft -X quit
+
 Restart=on-failure
 RestartSec=10
 SuccessExitStatus=0 143
+Nice=5
 
 [Install]
 WantedBy=multi-user.target
